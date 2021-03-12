@@ -1,4 +1,3 @@
-export const fetchTableItems = async () => {
-  const res = await fetch("http://localhost:3030/names");
-  return await res.json();
-};
+import { db } from './mockDatabase';
+
+export const fetchTableItems = () => new Promise(resolve => resolve(db.names));
