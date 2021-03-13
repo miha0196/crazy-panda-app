@@ -10,6 +10,7 @@ function App() {
   const [sortedValue, setSortedValue] = useState("id");
   const [sortDirection, setSortDirection] = useState("straight");
   const [filteredTableItems, setFilteredTableItems] = useState([]);
+  const [displayedTableItems, setDisplayedTableItems] = useState([]);
   const [pageCount, setPageCount] = useState(null);
 
   const activePage = useRef(1);
@@ -19,7 +20,8 @@ function App() {
       .then((res) => {
         setTableItems(res);
         setPageCount(Math.ceil(res.length / 50));
-        setFilteredTableItems(sortFunc(res, "id").slice(0, 50));
+        setFilteredTableItems(res);
+        setDisplayedTableItems(sortFunc(res, "id").slice(0, 50));
       })
       .catch((error) => {
         throw error;
@@ -52,14 +54,46 @@ function App() {
       (sortedValue === value && sortDirection === "reverse") ||
       sortedValue !== value
     ) {
-      setFilteredTableItems(sortFunc(filteredTableItems, value));
+      setDisplayedTableItems(sortFunc(displayedTableItems, value));
       setSortDirection("straight");
     } else {
-      setFilteredTableItems(sortFunc(filteredTableItems, value).reverse());
+      setDisplayedTableItems(sortFunc(displayedTableItems, value).reverse());
       setSortDirection("reverse");
     }
 
     setSortedValue(value);
+  };
+
+  const changePage = (count) => {
+    if (
+      (activePage.current > 1 && count === -1) ||
+      (activePage.current < pageCount && count === -2)
+    ) {
+      activePage.current =
+        count === -1 ? --activePage.current : ++activePage.current;
+      setDisplayedTableItems(
+        sortFunc(
+          filteredTableItems.slice(
+            50 * (activePage.current - 1),
+            50 * activePage.current
+          ),
+          sortedValue
+        )
+      );
+    }
+
+    if (count > 0) {
+      activePage.current = count;
+      setDisplayedTableItems(
+        sortFunc(
+          filteredTableItems.slice(
+            50 * (activePage.current - 1),
+            50 * activePage.current
+          ),
+          sortedValue
+        )
+      );
+    }
   };
 
   const searching = (e) => {
@@ -75,47 +109,19 @@ function App() {
     );
 
     setFilteredTableItems(sortFunc(sortArrCopy, sortedValue));
+    setDisplayedTableItems(sortFunc(sortArrCopy, sortedValue).slice(0, 50));
     setPageCount(Math.ceil(sortArrCopy.length / 50));
+    activePage.current = 1;
   };
 
-  const changePage = (count) => {
-    if (
-      (activePage.current > 1 && count === -1) ||
-      (activePage.current < pageCount && count === -2)
-    ) {
-      activePage.current =
-        count === -1 ? --activePage.current : ++activePage.current;
-      setFilteredTableItems(
-        sortFunc(
-          tableItems.slice(
-            50 * (activePage.current - 1),
-            50 * activePage.current
-          ),
-          sortedValue
-        )
-      );
-    }
-
-    if (count > 0) {
-      activePage.current = count;
-      setFilteredTableItems(
-        sortFunc(
-          tableItems.slice(
-            50 * (activePage.current - 1),
-            50 * activePage.current
-          ),
-          sortedValue
-        )
-      );
-    }
-  };
+  console.log('render')
 
   return (
     <React.Fragment>
       {isLoading && <div className="loading">Loading...</div>}
       {!isLoading && (
         <Table
-          filteredTableItems={filteredTableItems}
+          displayedTableItems={displayedTableItems}
           onSort={onSort}
           sortedValue={sortedValue}
           sortDirection={sortDirection}

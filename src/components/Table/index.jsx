@@ -11,7 +11,7 @@ import "./styles.less";
 const cx = cn("Table");
 
 export const Table = ({
-  filteredTableItems,
+  displayedTableItems,
   onSort,
   sortedValue,
   sortDirection,
@@ -93,14 +93,14 @@ export const Table = ({
           </tr>
         </thead>
         <tbody className={cx("list")}>
-          {filteredTableItems.length === 0 && (
+          {displayedTableItems.length === 0 && (
             <tr>
               <td className={cx("no-recordings")} colSpan="5">
                 Записей не найдено...
               </td>
             </tr>
           )}
-          {filteredTableItems.map((itemContent) => (
+          {displayedTableItems.map((itemContent) => (
             <TableItem key={itemContent.id} itemContent={itemContent} />
           ))}
         </tbody>
