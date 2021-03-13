@@ -114,8 +114,6 @@ function App() {
     activePage.current = 1;
   };
 
-  console.log('render')
-
   return (
     <React.Fragment>
       {isLoading && <div className="loading">Loading...</div>}
