@@ -1,6 +1,0 @@
-.gitignore
-.prettierignore
-yarn.lock
-package-lock.json
-craco.config.js
-dist
